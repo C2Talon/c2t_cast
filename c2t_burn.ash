@@ -1,7 +1,7 @@
 //c2t
 //c2t_burn
-//burns all health on a blood spell or burns all charges of the Powerful Glove on a cheat code
 //2020.10.26
+//burns all health on a blood spell or burns all charges of the Powerful Glove on a cheat code
 
 
 //burns all health on a skill
@@ -48,7 +48,7 @@ void c2t_bloodBurn(skill spell) {
 			print("Health already at 30 or less","blue");
 	}
 	else
-		print(spell+"is an invalid skill to burn health","red");
+		print(spell+" is an invalid skill to burn health","red");
 }
 
 void c2t_tripleBurn(skill spell) {

@@ -1,6 +1,5 @@
 //c2t
 //c2t_burn
-//2020.10.26
 //burns all health on a blood spell or burns all charges of the Powerful Glove on a cheat code
 
 
@@ -11,6 +10,7 @@ void c2t_bloodBurn(skill spell);
 //burns all Powerful Glove charges on a cheat code
 //spell is one of triple size or invisible avatar
 void c2t_tripleBurn(skill spell);
+
 
 //handler if script is called directly
 //arg is whichever case that is wanted to enter
@@ -33,7 +33,7 @@ void main(string arg) {
 			c2t_tripleBurn($skill[CHEAT CODE: Invisible Avatar]);
 			break;
 		default:
-			abort('invalid argument');
+			abort('invalid argument: '+arg);
 	}
 }
 

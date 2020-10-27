@@ -15,19 +15,24 @@ void c2t_tripleBurn(skill spell);
 //handler if script is called directly
 //arg is whichever case that is wanted to enter
 void main(string arg) {
-	switch (arg) {
+	switch (to_lower_case(arg)) {
+		case 'blood bubble':
 		case 'bubble':
 			c2t_bloodBurn($skill[Blood Bubble]);
 			break;
+		case 'blood bond':
 		case 'bond':
 			c2t_bloodBurn($skill[Blood Bond]);
 			break;
+		case 'blood frenzy':
 		case 'frenzy':
 			c2t_bloodBurn($skill[Blood Frenzy]);
 			break;
+		case 'triple size':
 		case 'triple':
 			c2t_tripleBurn($skill[CHEAT CODE: Triple Size]);
 			break;
+		case 'invisible avatar':
 		case 'invisible':
 		case 'invis':
 			c2t_tripleBurn($skill[CHEAT CODE: Invisible Avatar]);

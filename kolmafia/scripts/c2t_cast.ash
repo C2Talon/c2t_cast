@@ -1,102 +1,115 @@
-//c2t burn
+//c2t cast
 //c2t
 
-//burns all health on a blood spell or burns all charges of the Powerful Glove on a cheat code
-//alternatively, multi-casts blood skills and powerful glove skills
+//multicasting for skills that don't really multicast well with mafia methods
+//current skills supported are blood skills and powerful glove skills
 
 import <zlib.ash>
 
+//this function will burn all health on a blood skill or all charges on a powerful glove skill
+//ski is the skill to use
+//returns true if the skill was cast at least 1 time
+boolean c2t_burn(skill ski);
 
-//burns all health on a skill
-//spell is one of Blood Bubble, Blood Bond, or Blood Frenzy
-//returns true if successfully uses spell at least 1 time
-boolean c2t_bloodBurn(skill spell);
-//multicast version
-//num is number of times to cast spell
-boolean c2t_bloodMulti(int num,skill spell);
-boolean c2t_bloodMulti(string num,skill spell);
-
-
-//burns all Powerful Glove charges on a cheat code
-//spell is one of triple size or invisible avatar
-//returns true if successfully uses spell at least 1 time
-boolean c2t_tripleBurn(skill spell);
-//multicast version
-//num is number of times to cast spell
-boolean c2t_tripleMulti(int num,skill spell);
-boolean c2t_tripleMulti(string num,skill spell);
+//cast a blood skill or powerful glove skill
+//num is the number of times to cast
+//ski is the skill to use
+//returns true if the skill was cast at least 1 time
+boolean c2t_cast(int num,skill ski);
+//single-cast version
+boolean c2t_cast(skill ski);
 
 
-//helper function
-int _c2t_s2i(string num);
+//probably don't use these 2 in a script, as name and such subject to change
+boolean c2t_castBlood(int num,skill ski);
+boolean c2t_castGlove(int num,skill ski);
 
 
 //handler if script is called directly via cli
 //arg is whichever case that is wanted to enter
 void main(string arg) {
 	string [int] split = split_string(arg," ");
-	string str,val;
+	string str;
+	int num;
+	skill ski;
 
-	if (_c2t_s2i(split[0]) > 0 || split[0] == '*') {
-		val = split[0];
-		//all of zlib for this
-		str = list_remove(arg,val," ");
+	//parse arg
+	if (split[0].to_float().to_int() > 0) {
+		num = split[0].to_float().to_int();
+		str = list_remove(arg,num," ");
+	}
+	else if (split[0].to_float().to_int() < 0) {
+		print(`Cannot cast a negative number of times`,"red");
+		return;
+	}
+	else if (split[0] == '0') {
+		print(`Cannot cast something zero times`,"red");
+		return;
+	}
+	else if (split[0] == '*') {
+		num = -1;
+		str = list_remove(arg,'*'," ");
 	}
 	else {
-		val = '*';
+		num = 1;
 		str = arg;
 	}
 
 	switch (to_lower_case(str)) {
 		case 'blood bubble':
 		case 'bubble':
-			c2t_bloodMulti(val,$skill[Blood Bubble]);
+			ski = $skill[Blood Bubble];
 			break;
 		case 'blood bond':
 		case 'bond':
-			c2t_bloodMulti(val,$skill[Blood Bond]);
+			ski = $skill[Blood Bond];
 			break;
 		case 'blood frenzy':
 		case 'frenzy':
-			c2t_bloodMulti(val,$skill[Blood Frenzy]);
+			ski = $skill[Blood Frenzy];
 			break;
 		case 'triple size':
 		case 'triple':
-			c2t_tripleMulti(val,$skill[CHEAT CODE: Triple Size]);
+			ski = $skill[CHEAT CODE: Triple Size];
 			break;
 		case 'invisible avatar':
 		case 'invisible':
 		case 'invis':
-			c2t_tripleMulti(val,$skill[CHEAT CODE: Invisible Avatar]);
+			ski = $skill[CHEAT CODE: Invisible Avatar];
 			break;
+		default://fuzzy matching?
+			ski = str.to_skill();
+	}
+
+	c2t_cast(num,ski);
+}
+
+//functions for use in scripts
+boolean c2t_burn(skill ski) {
+	return c2t_cast(-1,ski);
+}
+boolean c2t_cast(skill ski) {
+	return c2t_cast(1,ski);
+}
+boolean c2t_cast(int num,skill ski) {
+	switch (ski) {
+		case $skill[Blood Bubble]:
+		case $skill[Blood Bond]:
+		case $skill[Blood Frenzy]:
+			return c2t_castBlood(num,ski);
+		case $skill[CHEAT CODE: Triple Size]:
+		case $skill[CHEAT CODE: Invisible Avatar]:
+			return c2t_castGlove(num,ski);
 		default:
-			abort(`invalid argument: {arg}`);
+			print(`{ski} is an invalid skill for c2t_cast`,"red");
+			return false;
 	}
 }
 
-//casting directly to int gives spooky warning to end user; casting to float first seems to suppress it
-int _c2t_s2i(string num) {
-	return num.to_float().to_int();
-}
-
-//wrapper functions for scripts
-boolean c2t_bloodBurn(skill spell) {
-	return c2t_bloodMulti('*',spell);
-}
-boolean c2t_bloodMulti(int num,skill spell) {
-	return c2t_bloodMulti(num.to_string(),spell);
-}
-boolean c2t_tripleBurn(skill spell) {
-	return c2t_tripleMulti('*',spell);
-}
-boolean c2t_tripleMulti(int num,skill spell) {
-	return c2t_tripleMulti(num.to_string(),spell);
-}
-
-//multicast blood spells
-boolean c2t_bloodMulti(string num,skill spell) {
+//multicast blood skills
+boolean c2t_castBlood(int num,skill spell) {
 	int max = my_hp()%30 > 0 ? my_hp()/30 : (my_hp()/30)-1;
-	int casts = (_c2t_s2i(num) > 0?_c2t_s2i(num):(num == '*'?max:0));
+	int casts = (num >= 0?num:max);
 
 	//errors
 	if (!have_skill(spell)) {
@@ -124,10 +137,10 @@ boolean c2t_bloodMulti(string num,skill spell) {
 	return use_skill(casts,spell);
 }
 
-//multicast powerful glove spells
-boolean c2t_tripleMulti(string num,skill spell) {
+//multicast powerful glove skills
+boolean c2t_castGlove(int num,skill spell) {
 	int max = 20 - get_property('_powerfulGloveBatteryPowerUsed').to_int()/5;
-	int casts = (_c2t_s2i(num) > 0?_c2t_s2i(num):(num == '*'?max:0));
+	int casts = (num >= 0?num:max);
 
 	//errors
 	if (available_amount($item[Powerful Glove]) == 0) {
@@ -154,7 +167,7 @@ boolean c2t_tripleMulti(string num,skill spell) {
 	//swap in powerful glove to acc3 if need be; fourth implementation at trying to make a swap work 100% is a charm?
 	item ite = $item[none];
 	if (!have_equipped($item[Powerful Glove])) {
- 		ite = equipped_item($slot[acc3]);
+		ite = equipped_item($slot[acc3]);
 		equip($slot[acc3],$item[Powerful Glove]);
 	}
 

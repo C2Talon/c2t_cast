@@ -2,7 +2,7 @@
 
 Kolmafia script to multi-cast blood spells or cheat codes, or to burn all health on blood spells or burn all charges on the Powerful Glove on a cheat code. This script is the successor to `c2t_burn`.
 
-This script basically makes equivalents to the `cast` command on the CLI and the `use_skill()` function in ASH, but for skills that don't behave the same as most other skills with those methods. For example, normally those methods don't allow the multi-casting of powerful gloves skills. This script handles that. Another example is you can't `cast * blood bubble` normally, but you can `c2t_burn * blood bubble`.
+This script basically makes equivalents to the `cast` command on the CLI and the `use_skill()` function in ASH, but for skills that don't behave the same as most other skills with those methods. For example, normally those methods don't allow the multi-casting of powerful gloves skills. This script handles that. Another example is you can't `cast * blood bubble` normally, but you can `c2t_cast * blood bubble`.
 
 List of skills supported:
 * Blood Bond
